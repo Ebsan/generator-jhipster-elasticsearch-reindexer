@@ -12,7 +12,7 @@ import { ElasticsearchReindexModalComponent } from './elasticsearch-reindex-moda
 })
 export class ElasticsearchReindexComponent {
 
-    constructor(
+    constructor (
         <%_ if (enableTranslation && requiresSetLocation) { _%>
         private jhiLanguageService: JhiLanguageService,
         <%_ } _%>
@@ -21,7 +21,7 @@ export class ElasticsearchReindexComponent {
         this.jhiLanguageService.setLocations(['elasticsearch-reindex']);
     }<%_ } else { %> { }<%_ } %>
 
-    showConfirm() {
+    showConfirm(): void {
         this.modalService.open(ElasticsearchReindexModalComponent);
     }
 }

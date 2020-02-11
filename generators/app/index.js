@@ -252,10 +252,10 @@ var functions = {
             this.log(chalk.yellow('  - inside @NgModule, imports: ') + this.angularXAppName + 'ElasticsearchReindexModule\n');
           }
           if (this.addElementToAdminMenu) {
-            this.addElementToAdminMenu('admin/elasticsearch-reindex', 'search', this.enableTranslation, this.clientFramework);
+            this.addElementToAdminMenu('admin/elasticsearch-reindex', 'search', this.enableTranslation, this.clientFramework, 'elasticsearch-reindex');
             if (this.enableTranslation) {
               this.languages.forEach((language) => {
-                this.addAdminElementTranslationKey('admin/elasticsearch-reindex', 'Reindex Elasticsearch', language);
+                this.addAdminElementTranslationKey('elasticsearch-reindex', 'Reindex Elasticsearch', language);
               });
             }
           }

@@ -12,7 +12,7 @@ import { UserRouteAccessService } from '../../shared';
 import { ElasticsearchReindexComponent } from './elasticsearch-reindex.component';
 
 export const elasticsearchReindexRoute: Route = {
-    path: 'elasticsearch-reindex',
+    path: '',
     component: ElasticsearchReindexComponent,
     data: {
         authorities: ['ROLE_ADMIN'],

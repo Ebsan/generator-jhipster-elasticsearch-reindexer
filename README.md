@@ -53,7 +53,7 @@ If you don't see the link, that probably means you are using an older version of
 <li ui-sref-active="active">
     <a ui-sref="elasticsearch-reindex" data-toggle="collapse" data-target=".navbar-collapse.in">
         <span class="glyphicon glyphicon-exclamation-sign"></span>&#xA0;
-        <span translate="global.menu.admin.elasticsearch">Reindex Elasticsearch</span>
+        <span translate="global.menu.admin.elasticsearch-reindex">Reindex Elasticsearch</span>
     </a>
 </li>
 ```
