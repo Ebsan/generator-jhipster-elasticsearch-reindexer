@@ -1,19 +1,12 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
-<%_ if (useAbsoluteTsImports) { _%>
-  <%_ if (useFullModuleImport) { _%>
 import { <%=angularXAppName%>SharedModule } from 'app/shared/shared.module';
-  <%_ } else { _%>
-import { <%=angularXAppName%>SharedModule } from 'app/shared';
-  <%_ } _%>
-<%_ } else { _%>
-import { <%=angularXAppName%>SharedModule } from '../../shared';
-<%_ } _%>
 
 import {
     ElasticsearchReindexComponent,
     ElasticsearchReindexModalComponent,
+    ElasticsearchReindexSelectedModalComponent,
     ElasticsearchReindexService,
     elasticsearchReindexRoute
 } from './';
@@ -25,14 +18,20 @@ const ADMIN_ROUTES = [
 @NgModule({
     imports: [
         <%=angularXAppName%>SharedModule,
-        RouterModule.forChild(ADMIN_ROUTES)
+        <%_ if (jhipsterMajorVersion > 4) { _%>
+            RouterModule.forChild(ADMIN_ROUTES)
+        <%_ } else { _%>
+        RouterModule.forRoot(ADMIN_ROUTES, { useHash: true })
+        <%_ } _%>
     ],
     declarations: [
         ElasticsearchReindexComponent,
-        ElasticsearchReindexModalComponent
+        ElasticsearchReindexModalComponent,
+        ElasticsearchReindexSelectedModalComponent
     ],
     entryComponents: [
-        ElasticsearchReindexModalComponent
+        ElasticsearchReindexModalComponent,
+        ElasticsearchReindexSelectedModalComponent
     ],
     providers: [
         ElasticsearchReindexService

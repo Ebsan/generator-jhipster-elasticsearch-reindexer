@@ -1,16 +1,11 @@
 package <%=packageName%>.service;
 
-<%_ if (useTimedAnnotation) { _%>
 import com.codahale.metrics.annotation.Timed;
-<%_ } _%>
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import <%=packageName%>.domain.*;
 import <%=packageName%>.repository.*;
 import <%=packageName%>.repository.search.*;
-<%_ if (useJest) { _%>
-import com.github.vanroy.springdata.jest.JestElasticsearchTemplate;
-<%_ } _%>
-<%_ if (useResourceException) { _%>
+<%_ if (jhipsterMajorVersion > 4) { _%>
 import org.elasticsearch.ResourceAlreadyExistsException;
 <%_ } else { _%>
 import org.elasticsearch.indices.IndexAlreadyExistsException;
@@ -20,7 +15,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-<%_ if (!useJest) { _%>
+<%_ if (jhipsterMajorVersion > 4) { _%>
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.beans.factory.annotation.Value;
+<%_ } else { _%>
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 <%_ } _%>
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
@@ -47,7 +47,11 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
+<%_ if (jhipsterMajorVersion > 4) { _%>
+public class ElasticsearchIndexService implements ApplicationListener<ContextRefreshedEvent> {
+<%_ } else { _%>
 public class ElasticsearchIndexService {
+<%_ } _%>
 
     private static final Lock reindexLock = new ReentrantLock();
 
@@ -70,8 +74,11 @@ public class ElasticsearchIndexService {
     private final UserSearchRepository userSearchRepository;
 
     <%_ } _%>
-    <%_ if (useJest) { _%>
-    private final JestElasticsearchTemplate elasticsearchTemplate;
+    <%_ if (jhipsterMajorVersion > 4) { _%>
+    private final ElasticsearchOperations elasticsearchTemplate;
+
+    @Value("#{systemEnvironment['REINDEX_ELASTICSEARCH'] ?: ''}")
+    private String reindex_elasticsearch;
     <%_ } else { _%>
     private final ElasticsearchTemplate elasticsearchTemplate;
     <%_ } _%>
@@ -90,8 +97,8 @@ public class ElasticsearchIndexService {
         <%_
             });
         } _%>
-        <%_ if (useJest) { _%>
-        JestElasticsearchTemplate elasticsearchTemplate) {
+        <%_ if (jhipsterMajorVersion > 4) { _%>
+        ElasticsearchOperations elasticsearchTemplate) {
         <%_ } else { _%>
         ElasticsearchTemplate elasticsearchTemplate) {
         <%_ } _%>
@@ -110,6 +117,17 @@ public class ElasticsearchIndexService {
         } _%>
         this.elasticsearchTemplate = elasticsearchTemplate;
     }
+
+    <%_ if (jhipsterMajorVersion > 4) { _%>
+    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent ) {
+        if (this.reindex_elasticsearch.isEmpty()) {
+            log.info("You may reindex all ElasticSearch entities on start-up with the REINDEX_ELASTICSEARCH environment variable set");
+        } else {
+            log.info("Reindexing all ElasticSearch entities");
+            this.reindexSelected(null, true);
+        }
+    }
+    <%_ } _%>
 <%_ } else if (jhipsterMajorVersion < 4) { _%>
     <%_ if (applicationType === 'monolith' || applicationType === 'microservice') {
             entityFiles.forEach(function (file) {
@@ -131,32 +149,28 @@ public class ElasticsearchIndexService {
     private UserSearchRepository userSearchRepository;
 
     <%_ } _%>
-
-    <%_ if (useJest) { _%>
-      @Inject
-      private JestElasticsearchTemplate elasticsearchTemplate;
-    <%_ } else { _%>
-      @Inject
-      private ElasticsearchTemplate elasticsearchTemplate;
-    <%_ } _%>
+    @Inject
+    private ElasticsearchTemplate elasticsearchTemplate;
 <%_ } _%>
 
     @Async
-    <%_ if (useTimedAnnotation) { _%>
     @Timed
-    <%_ } _%>
-    public void reindexAll() {
+    public void reindexSelected(List<String> classesForReindex, boolean all) {
         if (reindexLock.tryLock()) {
             try {
         <%_ if (!applicationType || applicationType === 'monolith' || applicationType === 'microservice') {
                 entityFiles.forEach(function (file) {
                     var entity = file.split('.json')[0];
                     var entityLowerCase = entity.charAt(0).toLowerCase() + entity.slice(1); _%>
-                reindexForClass(<%=entity%>.class, <%=entityLowerCase%>Repository, <%=entityLowerCase%>SearchRepository);
+                if (all || classesForReindex.contains("<%=entity%>")) {
+                    reindexForClass(<%=entity%>.class, <%=entityLowerCase%>Repository, <%=entityLowerCase%>SearchRepository);
+                }
         <%_     });
             }
             if (!skipUserManagement && (!applicationType || applicationType === 'monolith' || applicationType === 'gateway')) { _%>
-                reindexForClass(User.class, userRepository, userSearchRepository);
+                if (all || classesForReindex.contains("User")) {
+                    reindexForClass(User.class, userRepository, userSearchRepository);
+                }
         <%_ } _%>
 
                 log.info("Elasticsearch: Successfully performed reindexing");
@@ -171,10 +185,11 @@ public class ElasticsearchIndexService {
     @SuppressWarnings("unchecked")
     private <T, ID extends Serializable> void reindexForClass(Class<T> entityClass, JpaRepository<T, ID> jpaRepository,
                                                               ElasticsearchRepository<T, ID> elasticsearchRepository) {
+        String className = entityClass.getSimpleName();
         elasticsearchTemplate.deleteIndex(entityClass);
         try {
             elasticsearchTemplate.createIndex(entityClass);
-        <%_ if (useResourceException) { _%>
+        <%_ if (jhipsterMajorVersion > 4) { _%>
         } catch (ResourceAlreadyExistsException e) {
         <%_ } else { _%>
         } catch (IndexAlreadyExistsException e) {
@@ -194,7 +209,7 @@ public class ElasticsearchIndexService {
                         return new PropertyDescriptor(field.getName(), entityClass).getReadMethod();
                     } catch (IntrospectionException e) {
                         log.error("Error retrieving getter for class {}, field {}. Field will NOT be indexed",
-                            entityClass.getSimpleName(), field.getName(), e);
+                            className, field.getName(), e);
                         return null;
                     }
                 })
@@ -203,12 +218,12 @@ public class ElasticsearchIndexService {
 
             int size = 100;
             for (int i = 0; i <= jpaRepository.count() / size; i++) {
-                <%_ if (usePageRequestOf) { _%>
-                Pageable page = PageRequest.of(i, size);
-                <%_ } else { _%>
+            <%_ if (jhipsterMajorVersion <= 4) { _%>
                 Pageable page = new PageRequest(i, size);
-                <%_ } _%>
-                log.info("Indexing page {} of {}, size {}", i, jpaRepository.count() / size, size);
+            <%_ } else if (jhipsterMajorVersion > 4) { _%>
+                Pageable page = PageRequest.of(i, size);
+            <%_ } _%>
+                log.info("Indexing {} page {} of {}, size {}", className, i, jpaRepository.count() / size, size);
                 Page<T> results = jpaRepository.findAll(page);
                 results.map(result -> {
                     // if there are any relationships to load, do it now
@@ -222,13 +237,13 @@ public class ElasticsearchIndexService {
                     });
                     return result;
                 });
-                <%_ if (useSaveAll) { _%>
+                <%_ if (jhipsterMajorVersion > 4) { _%>
                 elasticsearchRepository.saveAll(results.getContent());
                 <%_ } else { _%>
                 elasticsearchRepository.save(results.getContent());
                 <%_ } _%>
             }
         }
-        log.info("Elasticsearch: Indexed all rows for {}", entityClass.getSimpleName());
+        log.info("Elasticsearch: Indexed all rows for {}", className);
     }
 }

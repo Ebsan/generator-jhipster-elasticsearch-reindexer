@@ -51,6 +51,7 @@ var functions = {
       this.skipServer = config.skipServer;
       this.skipUserManagement = config.skipUserManagement;
       this.authenticationType = config.authenticationType;
+      this.jhiPrefixDashed = config.jhiPrefix; // TODO_make sure prefix is ok
 
       if (this.authenticationType === 'uaa' && this.applicationType === 'gateway') {
         this.skipUserManagement = true;
@@ -60,10 +61,10 @@ var functions = {
 
       this.angularVersion = '1.0.0';
 
-      if (npmConfig && npmConfig.dependencies && npmConfig.dependencies['@angular/core']) {
-        this.angularVersion = npmConfig.dependencies['@angular/core'];
-      } else if (bowerConfig && bowerConfig.dependencies && bowerConfig.dependencies.angular) {
-        this.angularVersion = bowerConfig.dependencies.angular;
+      if (npmConfig && npmConfig['dependencies'] && npmConfig['dependencies']['@angular/core']) {
+        this.angularVersion = npmConfig['dependencies']['@angular/core'];
+      } else if (bowerConfig && bowerConfig['dependencies'] && bowerConfig['dependencies']['angular']) {
+        this.angularVersion = bowerConfig['dependencies']['angular'];
       }
 
       this.clientFramework = semver.gte(this.angularVersion, '2.0.0') ? 'angularX' : 'angular1';
@@ -78,14 +79,6 @@ var functions = {
       this.useCommonHttpApi = semver.gte(this.angularVersion, '5.0.0');
       this.requiresSetLocation = this.jhipsterVersion ? semver.lt(this.jhipsterVersion, '4.4.4') : false;
       this.usePostMapping = this.jhipsterVersion ? semver.gte(this.jhipsterVersion, '3.10.0') : false;
-      this.useJest = this.jhipsterVersion ? semver.gte(this.jhipsterVersion, '5.3.0') : false;
-      this.useTimedAnnotation = this.jhipsterVersion ? semver.lt(this.jhipsterVersion, '5.8.0') : false;
-      this.useHeaderUtilFromLibrary = this.jhipsterVersion ? semver.gte(this.jhipsterVersion, '6.0.0') : false;
-      this.useSaveAll = this.jhipsterVersion ? semver.gte(this.jhipsterVersion, '5.0.0') : false;
-      this.usePageRequestOf = this.jhipsterVersion ? semver.gte(this.jhipsterVersion, '5.0.0') : false;
-      this.useResourceException = this.jhipsterVersion ? semver.gte(this.jhipsterVersion, '5.0.0') : false;
-      this.useAbsoluteTsImports = this.jhipsterVersion ? semver.gte(this.jhipsterVersion, '5.0.0') : false;
-      this.useFullModuleImport = this.jhipsterVersion ? semver.gte(this.jhipsterVersion, '6.3.0') : false;
 
       this.entityFiles = shelljs.ls(jhipsterVar.jhipsterConfigDirectory).filter(function (file) {
         return file.match(/\.json$/);
@@ -112,6 +105,9 @@ var functions = {
       function getConfig(context) {
         if (context.getJhipsterAppConfig) {
           return context.getJhipsterAppConfig();
+        }
+        if (context.getAllJhipsterConfig) {
+          return context.getAllJhipsterConfig();
         }
 
         var fromPath = '.yo-rc.json';
@@ -196,11 +192,15 @@ var functions = {
       if (!this.skipServer) {
         this.template('src/main/java/package/web/rest/_ElasticsearchIndexResource.java', jhipsterVar.javaDir + 'web/rest/ElasticsearchIndexResource.java', this, {});
         this.template('src/main/java/package/service/_ElasticsearchIndexService.java', jhipsterVar.javaDir + 'service/ElasticsearchIndexService.java', this, {});
+        if (this.jhipsterMajorVersion > 5) {
+          this.addMavenDependency("com.codahale.metrics", "metrics-annotation", "4.1.2");
+        }
       }
       if (!this.skipClient) {
         if (this.clientFramework === 'angular1') {
           this.template('src/main/webapp/js/elasticsearch-reindex.controller.js', jhipsterVar.webappDir + this.appFolder + '/elasticsearch-reindex.controller.js', this, {});
           this.template('src/main/webapp/js/elasticsearch-reindex-dialog.controller.js', jhipsterVar.webappDir + this.appFolder + '/elasticsearch-reindex-dialog.controller.js', this, {});
+          this.template('src/main/webapp/js/elasticsearch-reindex-selected-dialog.controller.js', jhipsterVar.webappDir + this.appFolder + '/elasticsearch-reindex-selected-dialog.controller.js', this, {});
           this.template('src/main/webapp/js/elasticsearch-reindex.service.js', jhipsterVar.webappDir + this.serviceFolder + '/elasticsearch-reindex.service.js', this, {});
           this.template('src/main/webapp/html/elasticsearch-reindex.html', jhipsterVar.webappDir + this.appFolder + '/elasticsearch-reindex.html', this, {});
           this.template('src/main/webapp/html/elasticsearch-reindex-dialog.html', jhipsterVar.webappDir + this.appFolder + '/elasticsearch-reindex-dialog.html', this, {});
@@ -220,6 +220,7 @@ var functions = {
           if (this.addJavaScriptToIndex) {
             this.addJavaScriptToIndex('app/admin/elasticsearch-reindex/elasticsearch-reindex.controller.js');
             this.addJavaScriptToIndex('app/admin/elasticsearch-reindex/elasticsearch-reindex-dialog.controller.js');
+            this.addJavaScriptToIndex('app/admin/elasticsearch-reindex/elasticsearch-reindex-selected-dialog.controller.js');
             if (this.jhipsterMajorVersion > 2) {
               this.addJavaScriptToIndex('app/admin/elasticsearch-reindex/elasticsearch-reindex.state.js');
               this.addJavaScriptToIndex('app/admin/elasticsearch-reindex.service.js');
@@ -238,6 +239,7 @@ var functions = {
         } else if (this.clientFramework === 'angularX') {
           this.template('src/main/webapp/ts/_elasticsearch-reindex-modal.component.html', jhipsterVar.webappDir + this.appFolder + '/elasticsearch-reindex-modal.component.html', this, {});
           this.template('src/main/webapp/ts/_elasticsearch-reindex-modal.component.ts', jhipsterVar.webappDir + this.appFolder + '/elasticsearch-reindex-modal.component.ts', this, {});
+          this.template('src/main/webapp/ts/_elasticsearch-reindex-selected-modal.component.ts', jhipsterVar.webappDir + this.appFolder + '/elasticsearch-reindex-selected-modal.component.ts', this, {});
           this.template('src/main/webapp/ts/_elasticsearch-reindex.component.html', jhipsterVar.webappDir + this.appFolder + '/elasticsearch-reindex.component.html', this, {});
           this.template('src/main/webapp/ts/_elasticsearch-reindex.component.ts', jhipsterVar.webappDir + this.appFolder + '/elasticsearch-reindex.component.ts', this, {});
           this.template('src/main/webapp/ts/_elasticsearch-reindex.module.ts', jhipsterVar.webappDir + this.appFolder + '/elasticsearch-reindex.module.ts', this, {});
@@ -252,10 +254,13 @@ var functions = {
             this.log(chalk.yellow('  - inside @NgModule, imports: ') + this.angularXAppName + 'ElasticsearchReindexModule\n');
           }
           if (this.addElementToAdminMenu) {
-            this.addElementToAdminMenu('admin/elasticsearch-reindex', 'search', this.enableTranslation, this.clientFramework, 'elasticsearch-reindex');
+            let icon_name = this.jhipsterMajorVersion < 5 ? 'fw fa-search' : 'search';
+            let route_prefix = this.jhipsterMajorVersion < 5 ? '' : 'admin/'
+            let route_key = 'elasticsearch-reindex';
+            this.addElementToAdminMenu(route_prefix + route_key, icon_name, this.enableTranslation, this.clientFramework, route_key);
             if (this.enableTranslation) {
               this.languages.forEach((language) => {
-                this.addAdminElementTranslationKey('elasticsearch-reindex', 'Reindex Elasticsearch', language);
+                this.addAdminElementTranslationKey(route_key, 'Reindex Elasticsearch', language);
               });
             }
           }
@@ -270,7 +275,7 @@ var functions = {
 
     registering: function () {
       try {
-        this.registerModule('generator-jhipster-elasticsearch-reindexer', 'entity', 'post', 'app', 'Generate a service for reindexing all database rows for each of your entities');
+        this.registerModule('generator-jhipster-elasticsearch-reindexer-2', 'entity', 'post', 'app', 'Generate a service for reindexing all database rows for each of your entities');
       } catch (err) {
         this.log(chalk.red.bold('WARN!') + ' Could not register as a jhipster entity post creation hook...\n');
       }
@@ -284,7 +289,7 @@ var functions = {
 
 var generator;
 
-if (yeomanGenerator.extend || yeomanGenerator.Base && yeomanGenerator.Base.extend) {
+if (yeomanGenerator.extend || (yeomanGenerator.Base && yeomanGenerator.Base.extend)) {
   if (yeomanGenerator.extend) {
     JhipsterGenerator = yeomanGenerator.extend({});
   } else {
