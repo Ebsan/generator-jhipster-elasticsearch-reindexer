@@ -27,19 +27,19 @@ var JhipsterGenerator;
 
 var functions = {
   initializing: {
-    displayLogo: function() {
+    displayLogo: function () {
       // Have Yeoman greet the user.
       this.log(
         "Welcome to the " +
-          chalk.red("JHipster elasticsearch-reindexer") +
-          " generator! " +
-          chalk.yellow("v" + packagejs.version + "\n")
+        chalk.red("JHipster elasticsearch-reindexer") +
+        " generator! " +
+        chalk.yellow("v" + packagejs.version + "\n")
       );
     }
   },
 
   writing: {
-    setUpVars: function() {
+    setUpVars: function () {
       var config = getConfig(this);
       var npmConfig = getNpmConfig();
       var bowerConfig = getBowerConfig();
@@ -104,7 +104,7 @@ var functions = {
 
       this.entityFiles = shelljs
         .ls(jhipsterVar.jhipsterConfigDirectory)
-        .filter(function(file) {
+        .filter(function (file) {
           return file.match(/\.json$/);
         });
 
@@ -174,7 +174,7 @@ var functions = {
         return false;
       }
     },
-    validateVars: function() {
+    validateVars: function () {
       if (!this.jhipsterVersion) {
         this.log(
           chalk.yellow(
@@ -197,7 +197,7 @@ var functions = {
         this.log(
           chalk.yellow(
             "WARNING search engine is not set to Elasticsearch in JHipster configuration, " +
-              "generated service may fail to compile"
+            "generated service may fail to compile"
           )
         );
       }
@@ -213,7 +213,7 @@ var functions = {
         this.log(
           chalk.yellow(
             "WARNING clientFramework is missing in JHipster configuration, " +
-              "using angular1 as fallback"
+            "using angular1 as fallback"
           )
         );
         this.clientFramework = "angular1";
@@ -222,7 +222,7 @@ var functions = {
         this.log(
           chalk.yellow(
             "WARNING angularXAppName/angular2AppName is missing in JHipster configuration, " +
-              "using baseName + 'App' as fallback"
+            "using baseName + 'App' as fallback"
           )
         );
         this.angularXAppName = this.baseName.endsWith("App")
@@ -233,7 +233,7 @@ var functions = {
         this.log(
           chalk.yellow(
             "WARNING angularAppName is missing in JHipster configuration, " +
-              "using baseName + 'App' as fallback"
+            "using baseName + 'App' as fallback"
           )
         );
         this.angularAppName = this.baseName.endsWith("App")
@@ -244,7 +244,7 @@ var functions = {
         this.log(
           chalk.yellow(
             "WARNING enableTranslations is true but languages is missing in JHipster configuration, " +
-              "using 'en, fr' as fallback"
+            "using 'en, fr' as fallback"
           )
         );
         this.languages = ["en", "fr"];
@@ -253,7 +253,7 @@ var functions = {
         this.skipUserManagement = false;
       }
     },
-    writeTemplates: function() {
+    writeTemplates: function () {
       if (!this.skipServer) {
         this.template(
           "src/main/java/package/web/rest/_ElasticsearchIndexResource.java",
@@ -280,48 +280,48 @@ var functions = {
           this.template(
             "src/main/webapp/js/elasticsearch-reindex.controller.js",
             jhipsterVar.webappDir +
-              this.appFolder +
-              "/elasticsearch-reindex.controller.js",
+            this.appFolder +
+            "/elasticsearch-reindex.controller.js",
             this,
             {}
           );
           this.template(
             "src/main/webapp/js/elasticsearch-reindex-dialog.controller.js",
             jhipsterVar.webappDir +
-              this.appFolder +
-              "/elasticsearch-reindex-dialog.controller.js",
+            this.appFolder +
+            "/elasticsearch-reindex-dialog.controller.js",
             this,
             {}
           );
           this.template(
             "src/main/webapp/js/elasticsearch-reindex-selected-dialog.controller.js",
             jhipsterVar.webappDir +
-              this.appFolder +
-              "/elasticsearch-reindex-selected-dialog.controller.js",
+            this.appFolder +
+            "/elasticsearch-reindex-selected-dialog.controller.js",
             this,
             {}
           );
           this.template(
             "src/main/webapp/js/elasticsearch-reindex.service.js",
             jhipsterVar.webappDir +
-              this.serviceFolder +
-              "/elasticsearch-reindex.service.js",
+            this.serviceFolder +
+            "/elasticsearch-reindex.service.js",
             this,
             {}
           );
           this.template(
             "src/main/webapp/html/elasticsearch-reindex.html",
             jhipsterVar.webappDir +
-              this.appFolder +
-              "/elasticsearch-reindex.html",
+            this.appFolder +
+            "/elasticsearch-reindex.html",
             this,
             {}
           );
           this.template(
             "src/main/webapp/html/elasticsearch-reindex-dialog.html",
             jhipsterVar.webappDir +
-              this.appFolder +
-              "/elasticsearch-reindex-dialog.html",
+            this.appFolder +
+            "/elasticsearch-reindex-dialog.html",
             this,
             {}
           );
@@ -331,9 +331,9 @@ var functions = {
               this.template(
                 "src/main/webapp/i18n/elasticsearch-reindex.json",
                 jhipsterVar.webappDir +
-                  "i18n/" +
-                  language +
-                  "/elasticsearch-reindex.json",
+                "i18n/" +
+                language +
+                "/elasticsearch-reindex.json",
                 this,
                 {}
               );
@@ -344,8 +344,8 @@ var functions = {
             this.template(
               "src/main/webapp/js/elasticsearch-reindex.state.js",
               jhipsterVar.webappDir +
-                this.appFolder +
-                "/elasticsearch-reindex.state.js",
+              this.appFolder +
+              "/elasticsearch-reindex.state.js",
               this,
               {}
             );
@@ -353,8 +353,8 @@ var functions = {
             this.template(
               "src/main/webapp/js/elasticsearch-reindex.state.js",
               jhipsterVar.webappDir +
-                this.appFolder +
-                "/elasticsearch-reindex.js",
+              this.appFolder +
+              "/elasticsearch-reindex.js",
               this,
               {}
             );
@@ -406,64 +406,64 @@ var functions = {
           this.template(
             "src/main/webapp/ts/_elasticsearch-reindex-modal.component.html",
             jhipsterVar.webappDir +
-              this.appFolder +
-              "/elasticsearch-reindex-modal.component.html",
+            this.appFolder +
+            "/elasticsearch-reindex-modal.component.html",
             this,
             {}
           );
           this.template(
             "src/main/webapp/ts/_elasticsearch-reindex-modal.component.ts",
             jhipsterVar.webappDir +
-              this.appFolder +
-              "/elasticsearch-reindex-modal.component.ts",
+            this.appFolder +
+            "/elasticsearch-reindex-modal.component.ts",
             this,
             {}
           );
           this.template(
             "src/main/webapp/ts/_elasticsearch-reindex-selected-modal.component.ts",
             jhipsterVar.webappDir +
-              this.appFolder +
-              "/elasticsearch-reindex-selected-modal.component.ts",
+            this.appFolder +
+            "/elasticsearch-reindex-selected-modal.component.ts",
             this,
             {}
           );
           this.template(
             "src/main/webapp/ts/_elasticsearch-reindex.component.html",
             jhipsterVar.webappDir +
-              this.appFolder +
-              "/elasticsearch-reindex.component.html",
+            this.appFolder +
+            "/elasticsearch-reindex.component.html",
             this,
             {}
           );
           this.template(
             "src/main/webapp/ts/_elasticsearch-reindex.component.ts",
             jhipsterVar.webappDir +
-              this.appFolder +
-              "/elasticsearch-reindex.component.ts",
+            this.appFolder +
+            "/elasticsearch-reindex.component.ts",
             this,
             {}
           );
           this.template(
             "src/main/webapp/ts/_elasticsearch-reindex.module.ts",
             jhipsterVar.webappDir +
-              this.appFolder +
-              "/elasticsearch-reindex.module.ts",
+            this.appFolder +
+            "/elasticsearch-reindex.module.ts",
             this,
             {}
           );
           this.template(
             "src/main/webapp/ts/_elasticsearch-reindex.route.ts",
             jhipsterVar.webappDir +
-              this.appFolder +
-              "/elasticsearch-reindex.route.ts",
+            this.appFolder +
+            "/elasticsearch-reindex.route.ts",
             this,
             {}
           );
           this.template(
             "src/main/webapp/ts/_elasticsearch-reindex.service.ts",
             jhipsterVar.webappDir +
-              this.appFolder +
-              "/elasticsearch-reindex.service.ts",
+            this.appFolder +
+            "/elasticsearch-reindex.service.ts",
             this,
             {}
           );
@@ -490,14 +490,14 @@ var functions = {
             );
             this.log(
               chalk.yellow("  - at the beginning of the file: ") +
-                "import { " +
-                this.angularXAppName +
-                "ElasticsearchReindexModule } from './elasticsearch-reindex/elasticsearch-reindex.module';"
+              "import { " +
+              this.angularXAppName +
+              "ElasticsearchReindexModule } from './elasticsearch-reindex/elasticsearch-reindex.module';"
             );
             this.log(
               chalk.yellow("  - inside @NgModule, imports: ") +
-                this.angularXAppName +
-                "ElasticsearchReindexModule\n"
+              this.angularXAppName +
+              "ElasticsearchReindexModule\n"
             );
           }
           if (this.addElementToAdminMenu) {
@@ -527,9 +527,9 @@ var functions = {
               this.template(
                 "src/main/webapp/i18n/elasticsearch-reindex.json",
                 jhipsterVar.webappDir +
-                  "i18n/" +
-                  language +
-                  "/elasticsearch-reindex.json",
+                "i18n/" +
+                language +
+                "/elasticsearch-reindex.json",
                 this,
                 {}
               );
@@ -539,7 +539,7 @@ var functions = {
       }
     },
 
-    registering: function() {
+    registering: function () {
       try {
         this.registerModule(
           "generator-jhipster-elasticsearch-reindexer-2",
@@ -551,13 +551,13 @@ var functions = {
       } catch (err) {
         this.log(
           chalk.red.bold("WARN!") +
-            " Could not register as a jhipster entity post creation hook...\n"
+          " Could not register as a jhipster entity post creation hook...\n"
         );
       }
     }
   },
 
-  end: function() {
+  end: function () {
     this.log("End of elasticsearch-reindexer generator");
   }
 };
