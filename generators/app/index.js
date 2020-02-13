@@ -269,7 +269,7 @@ var functions = {
         );
         if (this.jhipsterMajorVersion > 5) {
           this.addMavenDependency(
-            "com.codahale.metrics",
+            "io.dropwizard.metrics",
             "metrics-annotation",
             "4.1.2"
           );
