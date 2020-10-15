@@ -94,19 +94,22 @@ var functions = {
         this.jhipsterMajorVersion = config.jhipsterVersion[0];
       }
 
-      this.useCommonHttpApi = semver.gte(this.angularVersion, "5.0.0");
-      this.requiresSetLocation = this.jhipsterVersion
-        ? semver.lt(this.jhipsterVersion, "4.4.4")
-        : false;
-      this.usePostMapping = this.jhipsterVersion
-        ? semver.gte(this.jhipsterVersion, "3.10.0")
-        : false;
+      this.useCommonHttpApi = semver.gte(this.angularVersion, '5.0.0');
+      this.requiresSetLocation = this.jhipsterVersion ? semver.lt(this.jhipsterVersion, '4.4.4') : false;
+      this.usePostMapping = this.jhipsterVersion ? semver.gte(this.jhipsterVersion, '3.10.0') : false;
+      this.useJest = this.jhipsterVersion ? semver.gte(this.jhipsterVersion, '5.3.0') : false;
+      this.useTimedAnnotation = this.jhipsterVersion ? semver.lt(this.jhipsterVersion, '5.8.0') : false;
+      this.useHeaderUtilFromLibrary = this.jhipsterVersion ? semver.gte(this.jhipsterVersion, '6.0.0') : false;
+      this.useSaveAll = this.jhipsterVersion ? semver.gte(this.jhipsterVersion, '5.0.0') : false;
+      this.usePageRequestOf = this.jhipsterVersion ? semver.gte(this.jhipsterVersion, '5.0.0') : false;
+      this.useResourceException = this.jhipsterVersion ? semver.gte(this.jhipsterVersion, '5.0.0') : false;
+      this.useAbsoluteTsImports = this.jhipsterVersion ? semver.gte(this.jhipsterVersion, '5.0.0') : false;
+      this.useFullModuleImport = this.jhipsterVersion ? semver.gte(this.jhipsterVersion, '6.3.0') : false;
+      this.useLazyLoading = this.jhipsterVersion ? semver.gte(this.jhipsterVersion, '6.4.0') : false;
 
-      this.entityFiles = shelljs
-        .ls(jhipsterVar.jhipsterConfigDirectory)
-        .filter(function (file) {
-          return file.match(/\.json$/);
-        });
+      this.entityFiles = shelljs.ls(jhipsterVar.jhipsterConfigDirectory).filter(function (file) {
+        return file.match(/\.json$/);
+      });
 
       // this variable is used in templates
       if (this.clientFramework === "angularX") {
